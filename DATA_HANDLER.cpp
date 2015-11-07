@@ -177,3 +177,8 @@ void DATA_HANDLER::setMap(int mapID, map map2)
 {
 	maps[mapID] = map2;
 }
+
+void DATA_HANDLER::setCurrentLayer(int layerID)
+{
+	currentLayerID = layerID;
+}

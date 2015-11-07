@@ -44,6 +44,7 @@ public:
 
 	//setters
 	void setMap(int mapID, map map2);
+	void setCurrentLayer(int layerID);
 };
 
 #endif /* DATA_HANDLER_H_ */

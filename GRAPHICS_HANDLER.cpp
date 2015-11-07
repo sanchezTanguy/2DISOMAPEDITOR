@@ -19,9 +19,6 @@ GRAPHICS_HANDLER::GRAPHICS_HANDLER(sf::String title, float width, float height) 
 	mouseY = 0;
 
 	currentTexture = 1; //default
-
-	addLayerButton.x = screenWidth/2;
-	addLayerButton.y = 0;
 }
 
 //Integer to String converstion function
@@ -68,6 +65,15 @@ void GRAPHICS_HANDLER::clear()
 
 void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int currentLayerID)
 {
+	addLayerButton.x = screenWidth/2 - currentMap.tileSize.width;
+	addLayerButton.y = 0;
+
+	previousLayerButton.x = screenWidth/2 + currentMap.tileSize.width;
+	previousLayerButton.y = 0;
+
+	nextLayerButton.x = screenWidth/2 + (2 * currentMap.tileSize.width);
+	nextLayerButton.y = 0;
+
 	float tileX = 0;
 	float tileY = 0;
 
@@ -131,6 +137,22 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
     			{
     				DATAREF->addLayer();
     			}
+
+    			if(mouseX >= previousLayerButton.x && mouseX <= previousLayerButton.x + tileWidth && mouseY >= previousLayerButton.y && mouseY <= previousLayerButton.y + tileHeight)
+    			{
+    				currentLayerID -= 1;
+
+    				if(currentLayerID >= 0)
+    					DATAREF->setCurrentLayer(currentLayerID);
+    			}
+
+    			if(mouseX >= nextLayerButton.x && mouseX <= nextLayerButton.x + tileWidth && mouseY >= nextLayerButton.y && mouseY <= nextLayerButton.y + tileHeight)
+    			{
+    				currentLayerID += 1;
+
+    				if(currentLayerID < currentMap.layers.size())
+    					DATAREF->setCurrentLayer(currentLayerID);
+    			}
         	}
         }
     }
@@ -139,10 +161,12 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
 
 //...
 
-void GRAPHICS_HANDLER::draw(map currentMap)
+void GRAPHICS_HANDLER::draw(map currentMap, int currentLayerID)
 {
 	//add layer button
+	window->draw(loadImg("tiles/pl.png", previousLayerButton.x, previousLayerButton.y));
 	window->draw(loadImg("tiles/al.png", addLayerButton.x, addLayerButton.y));
+	window->draw(loadImg("tiles/nl.png", nextLayerButton.x, nextLayerButton.y));
 
 	int nbrTiles = currentMap.nbrTiles;
 	int nbrLayers = currentMap.layers.size();
@@ -162,17 +186,20 @@ void GRAPHICS_HANDLER::draw(map currentMap)
 
 	for(int layer = 0; layer < nbrLayers; layer++)
 	{
-		zLayer = layer * offsetLayer;
-
-		for(int tile = 0; tile < nbrTiles; tile++)
+		if(layer <= currentLayerID)
 		{
-			texture = currentMap.layers[layer].tiles[tile].texture;
-			path = "tiles/" + intToString(texture) + ".png";
+			zLayer = layer * offsetLayer;
 
-			isoX = currentMap.layers[layer].tiles[tile].isocoords.x + offsetLeft;
-			isoY = (currentMap.layers[layer].tiles[tile].isocoords.y - zLayer) + offsetTop;
+			for(int tile = 0; tile < nbrTiles; tile++)
+			{
+				texture = currentMap.layers[layer].tiles[tile].texture;
+				path = "tiles/" + intToString(texture) + ".png";
 
-			window->draw(loadImg(path, isoX, isoY));
+				isoX = currentMap.layers[layer].tiles[tile].isocoords.x + offsetLeft;
+				isoY = (currentMap.layers[layer].tiles[tile].isocoords.y - zLayer) + offsetTop;
+
+				window->draw(loadImg(path, isoX, isoY));
+			}
 		}
 	}
 }

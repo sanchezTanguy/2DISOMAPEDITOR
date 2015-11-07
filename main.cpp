@@ -21,7 +21,7 @@ int main()
 
 		GAME->listenEvents(DATA, DATA->getCurrentMap(), DATA->getCurrentLayerID());
 
-		GAME->draw(DATA->getCurrentMap());
+		GAME->draw(DATA->getCurrentMap(), DATA->getCurrentLayerID());
 
 		GAME->display();
 	}

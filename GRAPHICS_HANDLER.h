@@ -43,8 +43,10 @@ private:
 
 	int currentTexture;
 
-	//Menu values
+	//menu button values
 	coordinates addLayerButton;
+	coordinates previousLayerButton;
+	coordinates nextLayerButton;
 
 public:
 	GRAPHICS_HANDLER(sf::String title, float width, float height);
@@ -58,7 +60,7 @@ public:
 	void clear();
 	void listenEvents(DATA_HANDLER * DATAREF,map currentMap, int currentLayerID);
 
-	void draw(map currentMap);
+	void draw(map currentMap, int currentLayerID);
 	void drawMenu(map currentMap);
 
 	void display();

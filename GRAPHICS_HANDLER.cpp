@@ -13,7 +13,7 @@ GRAPHICS_HANDLER::GRAPHICS_HANDLER(sf::String title, float width, float height) 
 
 	window = new sf::RenderWindow(sf::VideoMode(screenWidth, screenHeight), title);
 
-	nbrTypesTile = 5;
+	nbrTypesTile = 6;
 
 	mouseX = 0;
 	mouseY = 0;
@@ -188,7 +188,10 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
 
     			if(mouseX >= deleteLayerButton.x && mouseX <= deleteLayerButton.x + tileWidth && mouseY >= deleteLayerButton.y && mouseY <= deleteLayerButton.y + tileHeight)
     			{
-    				DATAREF->deleteLayer(currentMap.ID, currentLayerID);
+    				DATAREF->deleteLayer();
+
+    				currentLayerID = currentLayerID - 1;
+    				DATAREF->setCurrentLayer(currentLayerID);
     			}
 
     			if(mouseX >= previousLayerButton.x && mouseX <= previousLayerButton.x + tileWidth && mouseY >= previousLayerButton.y && mouseY <= previousLayerButton.y + tileHeight)

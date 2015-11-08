@@ -7,8 +7,8 @@
 
 int main()
 {
-	float mapBlocksW = 5;
-	float mapBlocksH = 5;
+	float mapBlocksW = 7;
+	float mapBlocksH = 7;
 
 	float tileW = 98;
 	float tileH = 97;

@@ -140,9 +140,19 @@ void DATA_HANDLER::addLayer(int mapID)
 	maps[mapID].layers.push_back(layerTMP);
 }
 
-void DATA_HANDLER::deleteLayer(int mapID, int layerID)
+void DATA_HANDLER::deleteLayer()
 {
-	//maps[currentMapID].layers.erase(maps[currentMapID].layers.begin() + layerID);
+	//This function make the map editor crash !
+
+	if(currentLayerID > 0)
+	{
+		maps[currentMapID].layers.erase(maps[currentMapID].layers.begin() + currentLayerID);
+	}
+}
+
+void DATA_HANDLER::saveCurrentMap()
+{
+	//...
 }
 
 //debug functions

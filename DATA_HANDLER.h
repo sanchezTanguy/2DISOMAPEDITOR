@@ -30,6 +30,7 @@ public:
 
 	void addLayer();//Use current map
 	void addLayer(int mapID);
+	void deleteLayer(int mapID, int layerID);
 
 	//debug functions
 	void setTileTexture(int tileNum, int texture);//Use current map and current layer

@@ -19,6 +19,9 @@ GRAPHICS_HANDLER::GRAPHICS_HANDLER(sf::String title, float width, float height) 
 	mouseY = 0;
 
 	currentTexture = 1; //default
+	currentGhostTexture = 11;
+
+	view = false;
 }
 
 //Integer to String converstion function
@@ -65,7 +68,13 @@ void GRAPHICS_HANDLER::clear()
 
 void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int currentLayerID)
 {
+	viewButton.x = screenWidth/2 - (currentMap.tileSize.width * 2);
+	viewButton.y = 0;
+
 	addLayerButton.x = screenWidth/2 - currentMap.tileSize.width;
+	addLayerButton.y = 0;
+
+	deleteLayerButton.x = screenWidth/2;
 	addLayerButton.y = 0;
 
 	previousLayerButton.x = screenWidth/2 + currentMap.tileSize.width;
@@ -80,47 +89,76 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
 	float tileISOx = 0;
 	float tileISOy = 0;
 
-	int currentMapNbrTiles = currentMap.nbrTiles;
-
 	int tileWidth = currentMap.tileSize.width;
 	int tileHeight = currentMap.tileSize.height;
 
+	int currentMapNbrTiles = currentMap.nbrTiles;
+
+	ratioOffsetLeft = 1.95;
+	ratioOffsetTop = 1.8;
+
+	offsetLayer = currentMap.tileSize.height / 2;
+	offsetLeft = currentMap.dim.width / ratioOffsetLeft;
+	offsetTop = currentMap.dim.height / ratioOffsetTop;
+	currentZLayer = currentLayerID * offsetLayer;
+
     while (window->pollEvent(event))
     {
+
         if (event.type == sf::Event::Closed)
             window->close();
 
-        if(event.type == sf::Event::MouseButtonPressed)
+        if (event.type == sf::Event::KeyPressed)
         {
-        	if(event.mouseButton.button == sf::Mouse::Left)
-        	{
-        		mouseX = event.mouseButton.x;
-        		mouseY = event.mouseButton.y;
-    			//DO NOT WORK -------------------------------->
-        		offsetLayer = currentMap.tileSize.height / 2;
-        		offsetLeft = currentMap.dim.width / 1.95;
-        		offsetTop = currentMap.dim.height / 1.8;
-        		currentZLayer = currentLayerID * offsetLayer;
-    			//<-------------------------------- DO NOT WORK
+            if (event.key.code == sf::Keyboard::Escape)
+            {
+            	if(brushMode)
+            		brushMode = false;
+            	else
+            		brushMode = true;
+            }
+        }
 
-        		mouseISOx = (mouseX - mouseY) + offsetLayer;
-        		mouseISOy = (((mouseX + mouseY) / 2) - currentZLayer) + offsetTop;
+        if (event.type == sf::Event::MouseMoved)
+        {
+			mouseMoveX = event.mouseMove.x;
+			mouseMoveY = event.mouseMove.y;
 
-				std::cout << "(" << mouseX << ", " << mouseY << ")" << std::endl;
+    		for(int tile = 0; tile < currentMapNbrTiles; tile++)
+    		{
+    			tileX = currentMap.layers[currentLayerID].tiles[tile].rawcoords.x;
+    			tileY = currentMap.layers[currentLayerID].tiles[tile].rawcoords.y;
+
+    			tileISOx = currentMap.layers[currentLayerID].tiles[tile].isocoords.x;
+    			tileISOy = currentMap.layers[currentLayerID].tiles[tile].isocoords.y;
+
+    			if(brushMode)
+    			{
+        			if(mouseMoveX >= tileISOx + offsetLeft && mouseMoveX <= (tileISOx + tileWidth)+offsetLeft && mouseMoveY >= (tileISOy - currentZLayer)+offsetTop && mouseMoveY <= ((tileISOy + tileHeight)-currentZLayer)+offsetTop)
+        			{
+        				DATAREF->setMap(currentMap.ID, setTile(currentMap, currentLayerID, tile, currentTexture));
+        			}
+    			}
+    		}
+
+        }
+
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+    			mouseX = event.mouseButton.x;
+    			mouseY = event.mouseButton.y;
 
         		for(int tile = 0; tile < currentMapNbrTiles; tile++)
         		{
-        			//do not work !
         			tileX = currentMap.layers[currentLayerID].tiles[tile].rawcoords.x;
         			tileY = currentMap.layers[currentLayerID].tiles[tile].rawcoords.y;
 
         			tileISOx = currentMap.layers[currentLayerID].tiles[tile].isocoords.x;
         			tileISOy = currentMap.layers[currentLayerID].tiles[tile].isocoords.y;
 
+
         			if(mouseX >= tileISOx + offsetLeft && mouseX <= (tileISOx + tileWidth)+offsetLeft && mouseY >= (tileISOy - currentZLayer)+offsetTop && mouseY <= ((tileISOy + tileHeight)-currentZLayer)+offsetTop)
         			{
-        				std::cout << "tile " << tile << std::endl;
-
         				DATAREF->setMap(currentMap.ID, setTile(currentMap, currentLayerID, tile, currentTexture));
         			}
         		}
@@ -130,30 +168,45 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
         			if(mouseX >= texturesMenuCoordinates[T].x && mouseX <= texturesMenuCoordinates[T].x + currentMap.tileSize.width && mouseY >= texturesMenuCoordinates[T].y && mouseY <= texturesMenuCoordinates[T].y + currentMap.tileSize.height)
         			{
         				currentTexture = T;
+        				currentGhostTexture = currentTexture + 10;
         			}
         		}
+
+    			if(mouseX >= viewButton.x && mouseX <= viewButton.x + tileWidth && mouseY >= viewButton.y && mouseY <= viewButton.y + tileHeight)
+    			{
+    				if(view == false)
+    					view = true;
+    				else
+    					view = false;
+    			}
 
     			if(mouseX >= addLayerButton.x && mouseX <= addLayerButton.x + tileWidth && mouseY >= addLayerButton.y && mouseY <= addLayerButton.y + tileHeight)
     			{
     				DATAREF->addLayer();
     			}
 
+    			if(mouseX >= deleteLayerButton.x && mouseX <= deleteLayerButton.x + tileWidth && mouseY >= deleteLayerButton.y && mouseY <= deleteLayerButton.y + tileHeight)
+    			{
+    				DATAREF->deleteLayer(currentMap.ID, currentLayerID);
+    			}
+
     			if(mouseX >= previousLayerButton.x && mouseX <= previousLayerButton.x + tileWidth && mouseY >= previousLayerButton.y && mouseY <= previousLayerButton.y + tileHeight)
     			{
-    				currentLayerID -= 1;
-
-    				if(currentLayerID >= 0)
+    				if(currentLayerID >= 1)
+    				{
+    					currentLayerID -= 1;
     					DATAREF->setCurrentLayer(currentLayerID);
+    				}
     			}
 
     			if(mouseX >= nextLayerButton.x && mouseX <= nextLayerButton.x + tileWidth && mouseY >= nextLayerButton.y && mouseY <= nextLayerButton.y + tileHeight)
     			{
-    				currentLayerID += 1;
-
-    				if(currentLayerID < currentMap.layers.size())
+    				if(currentLayerID < currentMap.layers.size() - 1)
+    				{
+    					currentLayerID += 1;
     					DATAREF->setCurrentLayer(currentLayerID);
+    				}
     			}
-        	}
         }
     }
 
@@ -164,16 +217,15 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
 void GRAPHICS_HANDLER::draw(map currentMap, int currentLayerID)
 {
 	//add layer button
+	window->draw(loadImg("tiles/v.png", viewButton.x, viewButton.y));
 	window->draw(loadImg("tiles/pl.png", previousLayerButton.x, previousLayerButton.y));
 	window->draw(loadImg("tiles/al.png", addLayerButton.x, addLayerButton.y));
+	window->draw(loadImg("tiles/dl.png", deleteLayerButton.x, deleteLayerButton.y));
 	window->draw(loadImg("tiles/nl.png", nextLayerButton.x, nextLayerButton.y));
 
 	int nbrTiles = currentMap.nbrTiles;
 	int nbrLayers = currentMap.layers.size();
-
-	offsetLayer = currentMap.tileSize.height / 2;
-	offsetLeft = currentMap.dim.width / 1.95;
-	offsetTop = currentMap.dim.height / 1.8;
+	int currentMapNbrTiles = currentMap.nbrTiles;
 
 	int zLayer = 0;
 
@@ -198,7 +250,14 @@ void GRAPHICS_HANDLER::draw(map currentMap, int currentLayerID)
 				isoX = currentMap.layers[layer].tiles[tile].isocoords.x + offsetLeft;
 				isoY = (currentMap.layers[layer].tiles[tile].isocoords.y - zLayer) + offsetTop;
 
-				window->draw(loadImg(path, isoX, isoY));
+				if(view && texture == 0)
+				{
+					//...
+				}
+				else
+				{
+					window->draw(loadImg(path, isoX, isoY));
+				}
 			}
 		}
 	}

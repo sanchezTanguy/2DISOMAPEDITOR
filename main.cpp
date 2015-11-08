@@ -7,11 +7,11 @@
 
 int main()
 {
-	GRAPHICS_HANDLER *GAME = new GRAPHICS_HANDLER("MMO", 800, 800);
+	GRAPHICS_HANDLER *GAME = new GRAPHICS_HANDLER("MMO", 950, 950);
 	GAME->loadTextures();
 
 	DATA_HANDLER *DATA = new DATA_HANDLER();
-	DATA->newMap(7, 7, 98, 97);
+	DATA->newMap(5, 5, 98, 97);
 	DATA->addLayer();
 
 	while(GAME->isRunning())

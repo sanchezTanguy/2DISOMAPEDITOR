@@ -140,6 +140,11 @@ void DATA_HANDLER::addLayer(int mapID)
 	maps[mapID].layers.push_back(layerTMP);
 }
 
+void DATA_HANDLER::deleteLayer(int mapID, int layerID)
+{
+	//maps[currentMapID].layers.erase(maps[currentMapID].layers.begin() + layerID);
+}
+
 //debug functions
 void DATA_HANDLER::setTileTexture(int tileNum, int texture)
 {

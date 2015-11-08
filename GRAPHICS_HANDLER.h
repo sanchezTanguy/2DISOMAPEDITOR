@@ -25,6 +25,7 @@ private:
 
 	sf::Texture textureTMP;
 	sf::Sprite spriteTMP;
+
 	std::vector<sf::Texture> textures;
 	std::vector<coordinates> texturesMenuCoordinates;
 
@@ -32,21 +33,30 @@ private:
 
 	int mouseX;
 	int mouseY;
-	int mouseISOx;
-	int mouseISOy;
+
+	int mouseMoveX;
+	int mouseMoveY;
 
 	//offsets
+	float ratioOffsetLeft;
+	float ratioOffsetTop;
 	float offsetLayer;
 	float offsetLeft;
 	float offsetTop;
 	float currentZLayer;
 
 	int currentTexture;
+	int currentGhostTexture;
 
 	//menu button values
 	coordinates addLayerButton;
+	coordinates deleteLayerButton;
 	coordinates previousLayerButton;
 	coordinates nextLayerButton;
+	coordinates viewButton;
+
+	bool view;
+	bool brushMode;
 
 public:
 	GRAPHICS_HANDLER(sf::String title, float width, float height);

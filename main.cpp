@@ -7,11 +7,20 @@
 
 int main()
 {
-	GRAPHICS_HANDLER *GAME = new GRAPHICS_HANDLER("MMO", 950, 950);
+	float mapBlocksW = 5;
+	float mapBlocksH = 5;
+
+	float tileW = 98;
+	float tileH = 97;
+
+	float screenWidth = (tileW * mapBlocksW) + (tileW*3);
+	float screenHeight = (tileH * mapBlocksH) + (tileH/2) - (mapBlocksH * 2);
+
+	GRAPHICS_HANDLER *GAME = new GRAPHICS_HANDLER("MMO", screenWidth, screenHeight);
 	GAME->loadTextures();
 
 	DATA_HANDLER *DATA = new DATA_HANDLER();
-	DATA->newMap(5, 5, 98, 97);
+	DATA->newMap(mapBlocksW, mapBlocksH, 98, 97);
 	DATA->addLayer();
 
 	while(GAME->isRunning())

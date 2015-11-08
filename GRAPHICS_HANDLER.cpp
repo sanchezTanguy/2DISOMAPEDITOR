@@ -94,11 +94,12 @@ void GRAPHICS_HANDLER::listenEvents(DATA_HANDLER * DATAREF, map currentMap, int 
 
 	int currentMapNbrTiles = currentMap.nbrTiles;
 
-	ratioOffsetLeft = 2;
-	ratioOffsetTop = 2;
+	ratioOffsetLayer = 2;
+	ratioOffsetLeft = 2; //NO
+	ratioOffsetTop = 2.2; //NO
 
-	offsetLayer = currentMap.tileSize.height / 2;
-	offsetLeft = currentMap.dim.width / ratioOffsetLeft;
+	offsetLayer = currentMap.tileSize.height / ratioOffsetLayer;
+	offsetLeft = (currentMap.dim.width / ratioOffsetLeft) + ((currentMap.tileSize.width * currentMap.width) / (currentMap.width - 1));
 	offsetTop = currentMap.dim.height / ratioOffsetTop;
 	currentZLayer = currentLayerID * offsetLayer;
 

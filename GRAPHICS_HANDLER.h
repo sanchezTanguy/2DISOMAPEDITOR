@@ -38,6 +38,7 @@ private:
 	int mouseMoveY;
 
 	//offsets
+	float ratioOffsetLayer;
 	float ratioOffsetLeft;
 	float ratioOffsetTop;
 	float offsetLayer;
